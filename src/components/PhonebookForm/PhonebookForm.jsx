@@ -1,39 +1,46 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { nanoid } from 'nanoid';
 import { Form, Btn } from './PhonebookFormStyled';
 import { InputName } from '../App/AppStyled';
+   
+export default function PhonebookForm({onAddContact}) {
 
-export default class PhonebookForm extends Component {
-    state = {
-        name: '',
-        number: ''
-    };
-    
-    handleChangeInput= (e) => {
-        const { name, value } = e.target; 
-        this.setState({
-            [name]: value,
-        })
+    const [name, setName] = useState('');
+    const [number, setNumber] = useState('');
+
+    const handleChangeInput = (e) => {
+        const { name, value } = e.target;
+
+        switch (name) {
+            case "name":
+                setName(value);
+                break;
+            case "number":
+                setNumber(value);
+                break;
+            default: return;
+        }
     }
-    handleSubmitPhonebookForm = (e) => {
+
+    const handleSubmitPhonebookForm = (e) => {
         e.preventDefault();
-        this.props.onAddContact(this.state);
-        this.setState({
-            name: '',
-            number: ''
-        })
+        const contact = {
+            name,
+            number,
+        }
+        onAddContact(contact);
+        setName('');
+        setNumber('');
     }
-    contactNameId = nanoid();
-    contactTelNumId = nanoid();
-    render() {
-        const { handleSubmitPhonebookForm, handleChangeInput, contactNameId, contactTelNumId } = this;
-        return (
+    let contactNameId = nanoid();
+    let contactTelNumId = nanoid();
+    return (
             <Form onSubmit={handleSubmitPhonebookForm}>
                 <InputName htmlFor={contactNameId}> Name </InputName>
                     <input
                         type="text"
                         name="name"
-                        value={this.state.name}
+                        value={name}
                         id={contactNameId}
                         pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
                         title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
@@ -44,7 +51,7 @@ export default class PhonebookForm extends Component {
                     <input
                         type="tel"
                         name="number"
-                        value={this.state.number}
+                        value={number}
                         id={contactTelNumId}
                         pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
                         title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
@@ -55,4 +62,4 @@ export default class PhonebookForm extends Component {
             </Form>
         )
     }
-}
+
